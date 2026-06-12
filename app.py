@@ -8,6 +8,19 @@ from functools import wraps
 
 app = Flask(__name__)
 
+# ─── CORS — allow Chrome extension requests ───────────────────────────────────
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"]  = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token"
+    return response
+
+@app.route("/validate", methods=["OPTIONS"])
+@app.route("/cookies", methods=["OPTIONS"])
+def handle_options():
+    return jsonify({}), 200
+
 # ─── Config ───────────────────────────────────────────────────────────────────
 ADMIN_TOKEN = os.environ.get("SGD_ADMIN_TOKEN", "changeme-admin-token")
 DATA_FILE = "sgd_licenses.json"
