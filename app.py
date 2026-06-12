@@ -26,7 +26,7 @@ ADMIN_TOKEN = os.environ.get("SGD_ADMIN_TOKEN", "changeme-admin-token")
 DATA_FILE = "sgd_licenses.json"
 SL_TZ = pytz.timezone("Asia/Colombo")
 
-CHATGPT_COOKIES = [
+SGD_COOKIES = [
     {"domain": "chatgpt.com", "name": "__cflb", "value": "0H28vzvP5FJafnkHxj4bfehZKNMupZgWGPyC3Jor89h", "path": "/", "secure": True, "httpOnly": True, "expirationDate": 1781375342},
     {"domain": "chatgpt.com", "name": "oai-hlib", "value": "true", "path": "/", "secure": False, "httpOnly": False, "expirationDate": 1781375342},
     {"domain": "chatgpt.com", "name": "_dd_s", "value": "aid=3e49fb69-a0a6-4721-8104-536142453465&rum=0&expire=1781289831843&logs=1&id=9e099f62-dea2-44b3-81bf-6276952a6d89&created=1781288521580", "path": "/", "secure": False, "httpOnly": False, "expirationDate": 1781375342},
