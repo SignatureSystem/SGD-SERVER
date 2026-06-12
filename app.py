@@ -23,9 +23,10 @@ def handle_options():
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 ADMIN_TOKEN = os.environ.get("SGD_ADMIN_TOKEN", "changeme-admin-token")
-DATA_FILE = "sgd_licenses.json"
+DATA_FILE = "/tmp/sgd_licenses.json"
 SL_TZ = pytz.timezone("Asia/Colombo")
 
+# ─── SGD Cookies (update via !sgd setcookies) ─────────────────────────────────
 SGD_COOKIES = [
     {"domain": "chatgpt.com", "name": "__cflb", "value": "0H28vzvP5FJafnkHxj4bfehZKNMupZgWGPyC3Jor89h", "path": "/", "secure": True, "httpOnly": True, "expirationDate": 1781375342},
     {"domain": "chatgpt.com", "name": "oai-hlib", "value": "true", "path": "/", "secure": False, "httpOnly": False, "expirationDate": 1781375342},
@@ -47,6 +48,7 @@ SGD_COOKIES = [
     {"domain": "chatgpt.com", "name": "oai-client-auth-info", "value": "%7B%22isOptedOut%22%3Afalse%2C%22loggedInWithGoogleOneTap%22%3Atrue%2C%22user%22%3A%7B%22name%22%3A%22Ahmed%20Bin%20Fawser%22%2C%22email%22%3A%22ahmedfawser%40gmail.com%22%2C%22picture%22%3A%22https%3A%2F%2Fcdn.auth0.com%2Favatars%2Faf.png%22%2C%22connectionType%22%3A2%2C%22timestamp%22%3A1781288775002%7D%7D", "path": "/", "secure": False, "httpOnly": False, "expirationDate": 1781375342},
     {"domain": ".chatgpt.com", "name": "oai-did", "value": "59d074a4-6c84-493c-8c21-eab44a44da10", "path": "/", "secure": False, "httpOnly": False, "expirationDate": 1781375342}
 ]
+
 # ─── JSON Storage ─────────────────────────────────────────────────────────────
 def load_data():
     if not os.path.exists(DATA_FILE):
@@ -152,16 +154,21 @@ def get_cookies():
 @require_admin
 def admin_add():
     body = request.get_json()
+    license_key = str(body.get("license_key", "")).strip().upper()
     phone = body.get("phone", "").strip()
     days = int(body.get("days", 30))
 
-    if not phone:
-        return jsonify({"success": False, "error": "Phone required"})
+    if not license_key:
+        return jsonify({"success": False, "error": "license_key required"})
 
-    license_key = "SGD-" + uuid.uuid4().hex[:4].upper() + "-" + uuid.uuid4().hex[:4].upper() + "-" + uuid.uuid4().hex[:4].upper()
     expiry = sl_now() + timedelta(days=days)
 
     data = load_data()
+
+    # Check if key already exists
+    if license_key in data["licenses"] and data["licenses"][license_key].get("status") == "active":
+        return jsonify({"success": False, "error": f"Key {license_key} already exists and is active. Use !sgd extend to add days."})
+
     data["licenses"][license_key] = {
         "phone": phone,
         "status": "active",
