@@ -99,7 +99,7 @@ def _save_all(licenses, devices, exempt):
         app.logger.error('sgd_licenses save error: ' + str(e))
 
 # ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
-ADMIN_SECRET = os.environ.get('ADMIN_SECRET', 'changeme123')
+ADMIN_SECRET = os.environ.get('SGD_ADMIN_TOKEN', 'changeme123')
 
 def _auth(req):
     s = req.args.get('secret') or (req.get_json(silent=True) or {}).get('secret', '')
